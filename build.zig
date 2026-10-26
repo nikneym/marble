@@ -17,6 +17,7 @@ pub fn build(b: *std.Build) void {
             .target = target,
             .optimize = optimize,
             .imports = &.{},
+            .link_libc = true,
         }),
     });
 
@@ -29,6 +30,15 @@ pub fn build(b: *std.Build) void {
 
     exe.root_module.linkLibrary(glfw_lib);
     exe.root_module.addObjectFile(impeller_obj);
+
+    exe.root_module.addIncludePath(b.path("vendor/stb/include"));
+    exe.root_module.addCSourceFile(.{
+        .file = b.path("vendor/stb/stb.c"),
+        .flags = &.{
+            "-std=c99",
+            "-fno-sanitize=undefined",
+        },
+    });
 
     b.installArtifact(exe);
 
